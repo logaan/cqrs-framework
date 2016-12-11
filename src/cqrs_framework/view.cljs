@@ -1,6 +1,7 @@
 (ns cqrs-framework.view
   (:require [datascript.core :as d]
             [cqrs-framework.controller :as c]
+            [cqrs-framework.elements :refer [div ul li form input]]
             [cljsjs.virtual-dom]))
 
 (def h js/virtualDom.h)
@@ -16,13 +17,12 @@
 
 (defn render [app db]
   (let [{:keys [new-task]} (app-data db)]
-    (h "div" #js {}
-       #js [(h "ul" #js {}
-               (clj->js
-                (for [{:keys [description]} (tasks db)]
-                  (h "li" #js {} description))))
-            (h "form" #js {:onsubmit (c/insert-new-task app)}
-               #js [(h "input" #js {:type     "text"
-                                    :value    new-task
-                                    :onchange (c/update-new-task app)})
-                    (h "input" #js {:type "submit" :value "Add" })])])))
+    (div {}
+         (ul {}
+             (for [{:keys [description]} (tasks db)]
+               (li {} description)))
+         (form {:onsubmit (c/insert-new-task app)}
+               (input {:type     "text"
+                       :value    new-task
+                       :onchange (c/update-new-task app)})
+               (input {:type "submit" :value "Add" })))))
