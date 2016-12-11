@@ -7,7 +7,7 @@
 (defrecord App [state])
 
 (def app
-  (App (atom {:counter 0})))
+  (App. (atom {:counter 0})))
 
 (defn render [state]
   (aset js/document.body.children.app "innerText" (:counter state)))
