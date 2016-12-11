@@ -1,16 +1,34 @@
 (ns cqrs-framework.core
-  (:require ))
+  (:require [datascript.core :as d]
+            [cljsjs.virtual-dom]))
 
 (enable-console-print!)
 
-(println "This text is printed from src/cqrs-framework/core.cljs. Go ahead and edit it and see reloading in action.")
+(defrecord App [state])
 
-;; define your app data so that it doesn't get over-written on reload
+(def app
+  (map->App {:state (atom {:counter 0})}))
 
-(defonce app-state (atom {:text "Hello world!"}))
+(defn render [state]
+  (aset js/document.body.children.app "innerText" (:counter state)))
+
+(add-watch (:state app) :key (fn [k r os ns] (render ns)))
 
 (defn on-js-reload []
-  ;; optionally touch your app-state to force rerendering depending on
-  ;; your application
-  ;; (swap! app-state update-in [:__figwheel_counter] inc)
-)
+  (render @(:state app)))
+
+;; controllers/counter.cljs
+
+(defprotocol Counter
+  (increment [app])
+  (decrement [app])
+  (reset [app]))
+
+(extend-type App
+  Counter
+  (increment [{:keys [state] :as app}]
+    (swap! state update-in [:counter] inc))
+  (decrement [{:keys [state]}]
+    (swap! state update-in [:counter] dec))
+  (reset [{:keys [state]}]
+    (swap! state assoc :counter 0)))
