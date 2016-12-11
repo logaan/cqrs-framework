@@ -22,5 +22,3 @@
     (.appendChild mount-point root)
     (add-watch state ::re-render (fn [_ _ _ _] (render app)))
     app))
-
-
