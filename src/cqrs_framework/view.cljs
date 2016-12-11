@@ -1,10 +1,7 @@
 (ns cqrs-framework.view
   (:require [datascript.core :as d]
             [cqrs-framework.controller :as c]
-            [cqrs-framework.elements :refer [div ul li form input]]
-            [cljsjs.virtual-dom]))
-
-(def h js/virtualDom.h)
+            [cqrs-framework.elements :refer [div ul li form input]]))
 
 (defn tasks [db]
   (map first
