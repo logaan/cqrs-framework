@@ -1,34 +1,20 @@
 (ns cqrs-framework.core
   (:require [datascript.core :as d]
+            [cqrs-framework.controller]
+            [cqrs-framework.framework :as f]
             [cljsjs.virtual-dom]))
 
 (enable-console-print!)
 
-(defrecord App [state])
-
-(def app
-  (App. (atom {:counter 0})))
-
-(defn render [state]
+(defn render [app state]
   (aset js/document.body.children.app "innerText" (:counter state)))
 
-(add-watch (:state app) :key (fn [k r os ns] (render ns)))
+(def app
+  (f/app (atom {:counter 0})
+          render))
 
 (defn on-js-reload []
-  (render @(:state app)))
+  (f/render app))
 
-;; controllers/counter.cljs
-
-(defprotocol Counter
-  (increment [app])
-  (decrement [app])
-  (reset [app]))
-
-(extend-type App
-  Counter
-  (increment [{:keys [state] :as app}]
-    (swap! state update-in [:counter] inc))
-  (decrement [{:keys [state]}]
-    (swap! state update-in [:counter] dec))
-  (reset [{:keys [state]}]
-    (swap! state assoc :counter 0)))
+(defonce rendered
+  (f/render app))
