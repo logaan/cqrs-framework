@@ -9,16 +9,11 @@
 (def schema
   {:db/ident {:db/unique :db.unique/identity}})
 
-(defonce conn
-  (d/create-conn schema))
-
-(defonce load
-  (d/transact! conn seed/data))
-
 (defonce app
-  (f/mount (js/document.getElementById "app")
-           conn
-           #'v/render))
+  (let [conn      (d/create-conn schema)
+        container (js/document.getElementById "app")]
+    (d/transact! conn seed/data)
+    (f/mount container conn #'v/render)))
 
 (defn on-js-reload []
   (f/render app))
