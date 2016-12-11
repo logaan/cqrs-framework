@@ -4,17 +4,17 @@
             [cqrs-framework.framework :as f]
             [cljsjs.virtual-dom]))
 
+(def h js/virtualDom.h)
+
 (enable-console-print!)
 
-(defn render [app state]
-  (aset js/document.body.children.app "innerText" (:counter state)))
+(defn render [app {:keys [counter]}]
+  (h "div" #js {} (str counter)))
 
-(def app
-  (f/app (atom {:counter 0})
-          render))
+(defonce app
+  (f/mount (js/document.getElementById "app")
+           (atom {:counter 0})
+           render))
 
 (defn on-js-reload []
-  (f/render app))
-
-(defonce rendered
   (f/render app))
